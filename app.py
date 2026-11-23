@@ -6,13 +6,12 @@ from pypdf import PdfReader
 # Library untuk membuat laporan PDF
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from xml.sax.saxutils import escape
 
 if "teks_pdf" not in st.session_state:
     st.session_state["teks_pdf"] = ""
-    
 
 
 def buat_pdf_laporan(judul, isi):
@@ -38,24 +37,59 @@ def buat_pdf_laporan(judul, isi):
     konten.append(Paragraph(escape(judul), gaya["Title"]))
     konten.append(Spacer(1, 12))
 
-    konten.append(
-        Paragraph(
-            "ENVIRONMENTAL • SOCIAL • GOVERNANCE",
-            gaya["Heading2"]
-        )
-    )
+    konten.append(Paragraph(
+        "ENVIRONMENTAL • SOCIAL • GOVERNANCE",
+        gaya["Heading2"]
+    ))
 
-    konten.append(Spacer(1, 20))
+    konten.append(Spacer(1, 15))
+
+    # Tabel hasil pemeriksaan ESG
+    data_tabel = [
+        ["Aspek ESG", "Total", "Terdeteksi", "Belum Terdeteksi"]
+    ]
 
     for baris in isi.split("\n"):
-        if baris.strip():
+        if baris.startswith("DATA_TABEL|"):
+            bagian = baris.split("|")
+            data_tabel.append([
+                bagian[1],
+                bagian[2],
+                bagian[3],
+                bagian[4]
+            ])
+
+    tabel = Table(
+        data_tabel,
+        colWidths=[125, 55, 90, 120]
+    )
+
+    tabel.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#17365D")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+        ("ALIGN", (1, 0), (-1, -1), "CENTER"),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, -1), 9),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+        ("TOPPADDING", (0, 0), (-1, -1), 8),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1),
+         [colors.white, colors.HexColor("#EAF0F6")])
+    ]))
+
+    konten.append(tabel)
+    konten.append(Spacer(1, 20))
+
+    # Isi laporan lainnya
+    for baris in isi.split("\n"):
+        if baris.strip() and not baris.startswith("DATA_TABEL|"):
             konten.append(
                 Paragraph(
                     escape(baris),
                     gaya["BodyText"]
                 )
             )
-            konten.append(Spacer(1, 8))
+            konten.append(Spacer(1, 7))
 
     def nomor_halaman(canvas, dokumen):
         canvas.saveState()
@@ -73,6 +107,7 @@ def buat_pdf_laporan(judul, isi):
 
     buffer.seek(0)
     return buffer.getvalue()
+
 
 st.set_page_config(
     page_title="Sistem Audit ESG Berbasis AI",
@@ -642,14 +677,13 @@ elif menu == "Laporan Audit":
                     "",
                     "HASIL PEMERIKSAAN PER ASPEK"
                 ]
+for aspek, indikator in hasil.items():
+    jumlah = len(indikator)
+    jumlah_ada = sum(indikator.values())
 
-                for aspek, indikator in hasil.items():
-                    jumlah = len(indikator)
-                    jumlah_ada = sum(indikator.values())
-
-                    isi_laporan.append(
-                        f"{aspek}: {jumlah_ada} dari {jumlah} indikator terdeteksi"
-                    )
+    isi_laporan.append(
+        f"DATA_TABEL|{aspek}|{jumlah}|{jumlah_ada}|{jumlah - jumlah_ada}"
+    )
 
                 isi_laporan.extend(["", "RINCIAN TEMUAN DAN REKOMENDASI"])
 
