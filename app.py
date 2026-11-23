@@ -59,8 +59,28 @@ if menu == "Beranda":
 
 # Halaman lainnya
 elif menu == "Unggah Dokumen":
-    st.title("📂 Unggah Dokumen")
-    st.write("Halaman untuk mengunggah dokumen perusahaan.")
+    st.title("📂 Unggah Dokumen Perusahaan")
+
+    st.write(
+        "Silakan unggah dokumen perusahaan "
+        "yang akan digunakan dalam proses audit ESG."
+    )
+
+    dokumen = st.file_uploader(
+        "Pilih dokumen perusahaan (PDF)",
+        type=["pdf"]
+    )
+
+    if dokumen is not None:
+        st.success("Dokumen berhasil diunggah!")
+
+        st.write("Nama dokumen:", dokumen.name)
+
+        st.write(
+            "Ukuran dokumen:",
+            round(dokumen.size / 1024, 2),
+            "KB"
+        )
 
 elif menu == "Audit Lingkungan":
     st.title("🌳 Audit Lingkungan")
