@@ -91,12 +91,14 @@ elif menu == "Unggah Dokumen":
                 teks_pdf += teks
 
             if teks_pdf.strip():
-                st.subheader("Isi Dokumen PDF")
-                st.text_area(
-                    "Teks yang berhasil dibaca",
-                    teks_pdf,
-                    height=400
-                )
+    st.subheader("Isi Dokumen PDF")
+
+    if st.button("📄 Lihat Isi Dokumen"):
+        st.text_area(
+            "Teks yang berhasil dibaca",
+            teks_pdf,
+            height=400
+        )
             else:
                 st.warning(
                     "Teks tidak ditemukan. PDF mungkin berupa hasil scan."
