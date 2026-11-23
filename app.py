@@ -5,6 +5,7 @@ from pypdf import PdfReader
 
 # Library untuk membuat laporan PDF
 from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from xml.sax.saxutils import escape
@@ -13,30 +14,64 @@ if "teks_pdf" not in st.session_state:
     st.session_state["teks_pdf"] = ""
     
 
+
 def buat_pdf_laporan(judul, isi):
     buffer = io.BytesIO()
 
     dokumen = SimpleDocTemplate(
         buffer,
-        pagesize=A4
+        pagesize=A4,
+        rightMargin=40,
+        leftMargin=40,
+        topMargin=45,
+        bottomMargin=45
     )
 
     gaya = getSampleStyleSheet()
 
-    konten = [
-        Paragraph(escape(judul), gaya["Title"]),
-        Spacer(1, 16)
-    ]
+    gaya["Title"].fontSize = 20
+    gaya["Title"].textColor = colors.HexColor("#17365D")
+    gaya["Title"].alignment = 1
+
+    konten = []
+
+    konten.append(Paragraph(escape(judul), gaya["Title"]))
+    konten.append(Spacer(1, 12))
+
+    konten.append(
+        Paragraph(
+            "ENVIRONMENTAL • SOCIAL • GOVERNANCE",
+            gaya["Heading2"]
+        )
+    )
+
+    konten.append(Spacer(1, 20))
 
     for baris in isi.split("\n"):
-        konten.append(
-            Paragraph(escape(baris) or "&nbsp;", gaya["BodyText"])
-        )
-        konten.append(Spacer(1, 6))
+        if baris.strip():
+            konten.append(
+                Paragraph(
+                    escape(baris),
+                    gaya["BodyText"]
+                )
+            )
+            konten.append(Spacer(1, 8))
 
-    dokumen.build(konten)
+    def nomor_halaman(canvas, dokumen):
+        canvas.saveState()
+        canvas.setFont("Helvetica", 9)
+        canvas.setFillColor(colors.grey)
+        canvas.drawString(40, 25, "Laporan Audit ESG")
+        canvas.drawRightString(555, 25, f"Halaman {dokumen.page}")
+        canvas.restoreState()
+
+    dokumen.build(
+        konten,
+        onFirstPage=nomor_halaman,
+        onLaterPages=nomor_halaman
+    )
+
     buffer.seek(0)
-
     return buffer.getvalue()
 
 st.set_page_config(
