@@ -524,6 +524,41 @@ elif menu == "Laporan Audit":
         kolom3.metric("Belum Ditemukan", belum_ditemukan)
 
         st.metric("Cakupan Informasi ESG", f"{cakupan:.1f}%")
+        
+        st.divider()
+        st.subheader("Rekomendasi Tindak Lanjut Audit")
+
+        jumlah_rekomendasi = 0
+
+        for aspek, daftar in indikator_esg.items():
+            st.markdown(f"### {aspek}")
+
+            for nama, kata_kunci in daftar.items():
+                ditemukan = any(
+                    kata in teks.lower()
+                    for kata in kata_kunci
+                )
+
+                if not ditemukan:
+                    jumlah_rekomendasi += 1
+
+                    with st.expander(f"Rekomendasi: {nama}"):
+                        st.write(
+                            f"Informasi mengenai {nama.lower()} "
+                            "belum ditemukan dalam dokumen."
+                        )
+
+                        st.write(
+                            "**Saran:** Perusahaan perlu melengkapi "
+                            "informasi, kebijakan, data, dan bukti "
+                            "pendukung terkait indikator tersebut."
+                        )
+
+        if jumlah_rekomendasi == 0:
+            st.success(
+                "Seluruh indikator memiliki informasi yang terdeteksi. "
+                "Tetap lakukan verifikasi atas kecukupan bukti."
+            )
 
 
         st.text_area(
