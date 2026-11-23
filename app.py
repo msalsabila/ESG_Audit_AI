@@ -3,8 +3,45 @@ import streamlit as st
 import io
 from pypdf import PdfReader
 
+# Library untuk membuat laporan PDF
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from xml.sax.saxutils import escape
+
 if "teks_pdf" not in st.session_state:
     st.session_state["teks_pdf"] = ""
+
+
+if "teks_pdf" not in st.session_state:
+    st.session_state["teks_pdf"] = ""
+
+def buat_pdf_laporan(judul, isi):
+    buffer = io.BytesIO()
+
+    dokumen = SimpleDocTemplate(
+        buffer,
+        pagesize=A4
+    )
+
+    gaya = getSampleStyleSheet()
+
+    konten = [
+        Paragraph(judul, gaya["Title"]),
+        Spacer(1, 16)
+    ]
+
+    for baris in isi.split("\n"):
+        konten.append(
+            Paragraph(escape(baris) or "&nbsp;", gaya["BodyText"])
+        )
+        konten.append(Spacer(1, 6))
+
+    dokumen.build(konten)
+
+    buffer.seek(0)
+
+    return buffer.getvalue()
 
 st.set_page_config(
     page_title="Sistem Audit ESG Berbasis AI",
