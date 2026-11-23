@@ -192,8 +192,73 @@ elif menu == "Audit Tata Kelola":
                 st.warning(f"{nama}: Informasi tidak ditemukan")
 
 elif menu == "Analisis Dokumen AI":
-    st.title("🤖 Analisis Dokumen dengan AI")
-    st.write("Halaman analisis isi dokumen perusahaan.")
+    st.title("🤖 Analisis Dokumen ESG")
+    st.write("Ringkasan pemeriksaan dokumen berdasarkan aspek ESG.")
+
+    teks = st.session_state["teks_pdf"].lower()
+
+    indikator_esg = {
+        "Environmental": {
+            "Emisi dan Gas Rumah Kaca": ["emisi", "gas rumah kaca", "karbon"],
+            "Penggunaan Energi": ["energi", "listrik", "bahan bakar"],
+            "Pengelolaan Air": ["air", "limbah cair", "penggunaan air"],
+            "Pengelolaan Limbah": ["limbah", "sampah", "daur ulang"],
+            "Keanekaragaman Hayati": ["keanekaragaman hayati", "deforestasi", "konservasi"]
+        },
+        "Social": {
+            "Ketenagakerjaan": ["karyawan", "tenaga kerja", "pekerja"],
+            "Keselamatan dan Kesehatan Kerja": ["keselamatan kerja", "kesehatan kerja", "k3"],
+            "Pelatihan dan Pengembangan": ["pelatihan", "pengembangan kompetensi"],
+            "Hak Asasi Manusia": ["hak asasi manusia", "ham", "hak pekerja"],
+            "Masyarakat": ["masyarakat", "pemberdayaan masyarakat", "program sosial"],
+            "Kesetaraan dan Keberagaman": ["kesetaraan", "keberagaman", "diskriminasi"]
+        },
+        "Governance": {
+            "Struktur Tata Kelola": ["direksi", "dewan komisaris", "komisaris"],
+            "Etika Bisnis": ["kode etik", "etika bisnis", "perilaku bisnis"],
+            "Anti Korupsi": ["anti korupsi", "antikorupsi", "gratifikasi"],
+            "Manajemen Risiko": ["manajemen risiko", "pengelolaan risiko"],
+            "Kepatuhan": ["kepatuhan", "peraturan", "regulasi"],
+            "Transparansi": ["transparansi", "keterbukaan informasi"],
+            "Komite Audit": ["komite audit", "audit internal"]
+        }
+    }
+
+    if not teks:
+        st.warning("Silakan unggah dokumen PDF terlebih dahulu.")
+    else:
+        total = 0
+        ditemukan_total = 0
+
+        for aspek, daftar in indikator_esg.items():
+            st.subheader(aspek)
+
+            for nama, kata_kunci in daftar.items():
+                total += 1
+                ditemukan = any(kata in teks for kata in kata_kunci)
+
+                if ditemukan:
+                    ditemukan_total += 1
+                    st.success(f"{nama}: Informasi ditemukan")
+                else:
+                    st.warning(f"{nama}: Informasi tidak ditemukan")
+
+        persentase = (ditemukan_total / total) * 100
+
+        st.divider()
+        st.subheader("Ringkasan Hasil Pemeriksaan")
+
+        kolom1, kolom2, kolom3 = st.columns(3)
+
+        kolom1.metric("Total Indikator", total)
+        kolom2.metric("Informasi Ditemukan", ditemukan_total)
+        kolom3.metric("Cakupan Indikator", f"{persentase:.1f}%")
+
+        st.info(
+            "Hasil ini merupakan pemeriksaan awal berdasarkan "
+            "pencocokan kata kunci dalam dokumen, bukan penilaian "
+            "mutlak atas kinerja ESG perusahaan."
+        )
 
 elif menu == "Temuan Audit":
     st.title("📋 Temuan Audit")
