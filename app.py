@@ -3,6 +3,9 @@ import streamlit as st
 import io
 from pypdf import PdfReader
 
+if "teks_pdf" not in st.session_state:
+    st.session_state["teks_pdf"] = ""
+
 st.set_page_config(
     page_title="Sistem Audit ESG Berbasis AI",
     page_icon="🌱",
@@ -89,7 +92,8 @@ elif menu == "Unggah Dokumen":
                 teks = halaman.extract_text() or ""
                 teks_pdf += f"\n--- HALAMAN {nomor} ---\n"
                 teks_pdf += teks
-
+                
+            st.session_state["teks_pdf"] = teks_pdf
         
             if teks_pdf.strip():
                 st.subheader("Isi Dokumen PDF")
