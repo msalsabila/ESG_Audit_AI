@@ -621,8 +621,9 @@ elif menu == "Laporan Audit":
                 )
 
                 st.download_button(
-                    label="⬇️ Unduh Laporan Audit PDF",
-                    data=pdf,
-                    file_name="Laporan_Audit_ESG.pdf",
-                    mime="application/pdf"
-                )
+    label="⬇️ Unduh Laporan Audit PDF",
+    data=pdf,
+    file_name="Laporan_Audit_ESG.pdf",
+    mime="application/pdf",
+    key="download_laporan_esg"
+)
