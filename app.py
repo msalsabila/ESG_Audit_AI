@@ -456,6 +456,75 @@ elif menu == "Laporan Audit":
             "Laporan ini merupakan hasil pemeriksaan awal "
             "berdasarkan dokumen yang diunggah."
         )
+        
+        st.divider()
+        st.subheader("Hasil Pemeriksaan ESG")
+
+        indikator_esg = {
+            "Environmental": {
+                "Emisi dan Gas Rumah Kaca": ["emisi", "gas rumah kaca", "karbon"],
+                "Penggunaan Energi": ["energi", "listrik", "bahan bakar"],
+                "Pengelolaan Air": ["air", "limbah cair", "penggunaan air"],
+                "Pengelolaan Limbah": ["limbah", "sampah", "daur ulang"],
+                "Keanekaragaman Hayati": ["keanekaragaman hayati", "deforestasi", "konservasi"]
+            },
+            "Social": {
+                "Ketenagakerjaan": ["karyawan", "tenaga kerja", "pekerja"],
+                "Keselamatan dan Kesehatan Kerja": ["keselamatan kerja", "kesehatan kerja", "k3"],
+                "Pelatihan dan Pengembangan": ["pelatihan", "pengembangan kompetensi"],
+                "Hak Asasi Manusia": ["hak asasi manusia", "ham", "hak pekerja"],
+                "Masyarakat": ["masyarakat", "pemberdayaan masyarakat", "program sosial"],
+                "Kesetaraan dan Keberagaman": ["kesetaraan", "keberagaman", "diskriminasi"]
+            },
+            "Governance": {
+                "Struktur Tata Kelola": ["direksi", "dewan komisaris", "komisaris"],
+                "Etika Bisnis": ["kode etik", "etika bisnis", "perilaku bisnis"],
+                "Anti Korupsi": ["anti korupsi", "antikorupsi", "gratifikasi"],
+                "Manajemen Risiko": ["manajemen risiko", "pengelolaan risiko"],
+                "Kepatuhan": ["kepatuhan", "peraturan", "regulasi"],
+                "Transparansi": ["transparansi", "keterbukaan informasi"],
+                "Komite Audit": ["komite audit", "audit internal"]
+            }
+        }
+
+        total = 0
+        jumlah_ditemukan = 0
+
+        for aspek, daftar in indikator_esg.items():
+            st.markdown(f"### {aspek}")
+
+            ditemukan_aspek = 0
+
+            for nama, kata_kunci in daftar.items():
+                total += 1
+                status = any(kata in teks.lower() for kata in kata_kunci)
+
+                if status:
+                    jumlah_ditemukan += 1
+                    ditemukan_aspek += 1
+                    st.success(f"{nama}: Informasi ditemukan")
+                else:
+                    st.warning(f"{nama}: Informasi tidak ditemukan")
+
+            st.write(
+                f"Indikator ditemukan: {ditemukan_aspek} "
+                f"dari {len(daftar)}"
+            )
+
+        belum_ditemukan = total - jumlah_ditemukan
+        cakupan = (jumlah_ditemukan / total) * 100
+
+        st.divider()
+        st.subheader("Ringkasan Hasil Audit")
+
+        kolom1, kolom2, kolom3 = st.columns(3)
+
+        kolom1.metric("Total Indikator", total)
+        kolom2.metric("Informasi Ditemukan", jumlah_ditemukan)
+        kolom3.metric("Belum Ditemukan", belum_ditemukan)
+
+        st.metric("Cakupan Informasi ESG", f"{cakupan:.1f}%")
+
 
         st.text_area(
             "Isi Dokumen yang Menjadi Dasar Pemeriksaan",
