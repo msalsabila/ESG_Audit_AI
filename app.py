@@ -664,6 +664,7 @@ elif menu == "Laporan Audit":
             elif not nama_dokumen.strip():
                 st.error("Silakan isi nama dokumen terlebih dahulu.")
             else:
+               
                 isi_laporan = [
                     f"Nama Perusahaan: {nama_perusahaan}",
                     f"Nama Dokumen: {nama_dokumen}",
@@ -677,17 +678,19 @@ elif menu == "Laporan Audit":
                     "",
                     "HASIL PEMERIKSAAN PER ASPEK"
                 ]
-for aspek, indikator in hasil.items():
-    jumlah = len(indikator)
-    jumlah_ada = sum(indikator.values())
 
-    isi_laporan.append(
-        f"DATA_TABEL|{aspek}|{jumlah}|{jumlah_ada}|{jumlah - jumlah_ada}"
-    )
+                for aspek, indikator in hasil.items():
+                    jumlah = len(indikator)
+                    jumlah_ada = sum(indikator.values())
 
-                isi_laporan.extend(["", "RINCIAN TEMUAN DAN REKOMENDASI"])
+                    isi_laporan.append(
+                        f"DATA_TABEL|{aspek}|{jumlah}|{jumlah_ada}|{jumlah - jumlah_ada}"
+                    )
 
-                             isi_laporan.extend(["", "RINCIAN TEMUAN DAN REKOMENDASI"])
+                isi_laporan.extend([
+                    "",
+                    "RINCIAN TEMUAN DAN REKOMENDASI"
+                ])
 
                 for aspek, indikator in hasil.items():
                     isi_laporan.append(aspek.upper())
@@ -702,7 +705,8 @@ for aspek, indikator in hasil.items():
                                 f"{nama}: Belum terdeteksi. "
                                 "Rekomendasi: Lengkapi informasi dan bukti pendukung."
                             )
-isi_laporan.extend([
+
+                isi_laporan.extend([
                     "",
                     "KESIMPULAN",
                     f"Ditemukan {ditemukan} dari {total} indikator ESG "
@@ -716,6 +720,7 @@ isi_laporan.extend([
                     "LAPORAN HASIL AUDIT ESG",
                     "\n".join(isi_laporan)
                 )
+
 
                 st.download_button(
     label="⬇️ Unduh Laporan Audit PDF",
