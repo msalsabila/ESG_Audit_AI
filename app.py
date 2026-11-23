@@ -59,12 +59,13 @@ if menu == "Beranda":
         st.info("🏢 AUDIT TATA KELOLA")
 
 # Halaman lainnya
+
 elif menu == "Unggah Dokumen":
     st.title("📂 Unggah Dokumen Perusahaan")
 
     st.write(
-        "Silakan unggah dokumen perusahaan "
-        "yang akan digunakan dalam proses audit ESG."
+        "Unggah laporan tahunan atau laporan keberlanjutan "
+        "perusahaan dalam format PDF."
     )
 
     dokumen = st.file_uploader(
@@ -74,14 +75,34 @@ elif menu == "Unggah Dokumen":
 
     if dokumen is not None:
         st.success("Dokumen berhasil diunggah!")
-
         st.write("Nama dokumen:", dokumen.name)
 
-        st.write(
-            "Ukuran dokumen:",
-            round(dokumen.size / 1024, 2),
-            "KB"
-        )
+        try:
+            pembaca = PdfReader(dokumen)
+
+            st.write("Jumlah halaman:", len(pembaca.pages))
+
+            teks_pdf = ""
+
+            for nomor, halaman in enumerate(pembaca.pages, start=1):
+                teks = halaman.extract_text() or ""
+                teks_pdf += f"\n--- HALAMAN {nomor} ---\n"
+                teks_pdf += teks
+
+            if teks_pdf.strip():
+                st.subheader("Isi Dokumen PDF")
+                st.text_area(
+                    "Teks yang berhasil dibaca",
+                    teks_pdf,
+                    height=400
+                )
+            else:
+                st.warning(
+                    "Teks tidak ditemukan. PDF mungkin berupa hasil scan."
+                )
+
+        except Exception as e:
+            st.error(f"Dokumen gagal dibaca: {e}")
 
 elif menu == "Audit Lingkungan":
     st.title("🌳 Audit Lingkungan")
