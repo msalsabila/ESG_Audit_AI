@@ -12,10 +12,6 @@ from xml.sax.saxutils import escape
 if "teks_pdf" not in st.session_state:
     st.session_state["teks_pdf"] = ""
 
-
-if "teks_pdf" not in st.session_state:
-    st.session_state["teks_pdf"] = ""
-
 st.set_page_config(
     page_title="Sistem Audit ESG Berbasis AI",
     page_icon="🌱",
