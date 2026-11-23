@@ -140,7 +140,29 @@ elif menu == "Audit Lingkungan":
 
 elif menu == "Audit Sosial":
     st.title("👥 Audit Sosial")
-    st.write("Halaman pemeriksaan aspek sosial.")
+    st.write("Pemeriksaan informasi sosial berdasarkan dokumen perusahaan.")
+
+    teks = st.session_state["teks_pdf"].lower()
+
+    indikator = {
+        "Ketenagakerjaan": ["karyawan", "tenaga kerja", "pekerja"],
+        "Keselamatan dan Kesehatan Kerja (K3)": ["keselamatan kerja", "kesehatan kerja", "k3"],
+        "Pelatihan dan Pengembangan": ["pelatihan", "pengembangan kompetensi"],
+        "Hak Asasi Manusia": ["hak asasi manusia", "ham", "hak pekerja"],
+        "Masyarakat": ["masyarakat", "pemberdayaan masyarakat", "program sosial"],
+        "Kesetaraan dan Keberagaman": ["kesetaraan", "keberagaman", "diskriminasi"]
+    }
+
+    if not teks:
+        st.warning("Silakan unggah dokumen PDF terlebih dahulu.")
+    else:
+        for nama, kata_kunci in indikator.items():
+            ditemukan = any(kata in teks for kata in kata_kunci)
+
+            if ditemukan:
+                st.success(f"{nama}: Informasi ditemukan")
+            else:
+                st.warning(f"{nama}: Informasi tidak ditemukan")
 
 elif menu == "Audit Tata Kelola":
     st.title("🏢 Audit Tata Kelola")
