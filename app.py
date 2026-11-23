@@ -115,7 +115,28 @@ elif menu == "Unggah Dokumen":
 
 elif menu == "Audit Lingkungan":
     st.title("🌳 Audit Lingkungan")
-    st.write("Halaman pemeriksaan aspek lingkungan.")
+    st.write("Pemeriksaan informasi lingkungan berdasarkan dokumen perusahaan.")
+
+    teks = st.session_state["teks_pdf"].lower()
+
+    indikator = {
+        "Emisi dan Gas Rumah Kaca": ["emisi", "gas rumah kaca", "karbon"],
+        "Penggunaan Energi": ["energi", "listrik", "bahan bakar"],
+        "Pengelolaan Air": ["air", "limbah cair", "penggunaan air"],
+        "Pengelolaan Limbah": ["limbah", "sampah", "daur ulang"],
+        "Keanekaragaman Hayati": ["keanekaragaman hayati", "deforestasi", "konservasi"]
+    }
+
+    if not teks:
+        st.warning("Silakan unggah dokumen PDF terlebih dahulu.")
+    else:
+        for nama, kata_kunci in indikator.items():
+            ditemukan = any(kata in teks for kata in kata_kunci)
+
+            if ditemukan:
+                st.success(f"{nama}: Informasi ditemukan")
+            else:
+                st.warning(f"{nama}: Informasi tidak ditemukan")
 
 elif menu == "Audit Sosial":
     st.title("👥 Audit Sosial")
