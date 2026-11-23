@@ -260,52 +260,161 @@ elif menu == "Analisis Dokumen AI":
             "mutlak atas kinerja ESG perusahaan."
         )
 
+
 elif menu == "Temuan Audit":
-    st.title("📋 Temuan Audit ESG")
-    st.write("Daftar hasil pemeriksaan berdasarkan dokumen perusahaan.")
+    st.title("📋 Temuan dan Rekomendasi Audit ESG")
+    st.write(
+        "Daftar hasil pemeriksaan dan rekomendasi "
+        "perbaikan berdasarkan dokumen perusahaan."
+    )
 
     teks = st.session_state["teks_pdf"].lower()
 
     indikator_esg = {
         "Environmental": {
-            "Emisi dan Gas Rumah Kaca": ["emisi", "gas rumah kaca", "karbon"],
-            "Penggunaan Energi": ["energi", "listrik", "bahan bakar"],
-            "Pengelolaan Air": ["air", "limbah cair", "penggunaan air"],
-            "Pengelolaan Limbah": ["limbah", "sampah", "daur ulang"],
-            "Keanekaragaman Hayati": ["keanekaragaman hayati", "deforestasi", "konservasi"]
+            "Emisi dan Gas Rumah Kaca": (
+                ["emisi", "gas rumah kaca", "karbon"],
+                "Periksa kelengkapan data emisi dan upaya pengurangan gas rumah kaca."
+            ),
+            "Penggunaan Energi": (
+                ["energi", "listrik", "bahan bakar"],
+                "Periksa pencatatan konsumsi energi dan program efisiensi energi."
+            ),
+            "Pengelolaan Air": (
+                ["air", "limbah cair", "penggunaan air"],
+                "Periksa data penggunaan air dan pengelolaan limbah cair."
+            ),
+            "Pengelolaan Limbah": (
+                ["limbah", "sampah", "daur ulang"],
+                "Periksa prosedur pengelolaan dan pengurangan limbah."
+            ),
+            "Keanekaragaman Hayati": (
+                ["keanekaragaman hayati", "deforestasi", "konservasi"],
+                "Periksa kebijakan perlindungan lingkungan dan keanekaragaman hayati."
+            )
         },
         "Social": {
-            "Ketenagakerjaan": ["karyawan", "tenaga kerja", "pekerja"],
-            "Keselamatan dan Kesehatan Kerja": ["keselamatan kerja", "kesehatan kerja", "k3"],
-            "Pelatihan dan Pengembangan": ["pelatihan", "pengembangan kompetensi"],
-            "Hak Asasi Manusia": ["hak asasi manusia", "ham", "hak pekerja"],
-            "Masyarakat": ["masyarakat", "pemberdayaan masyarakat", "program sosial"],
-            "Kesetaraan dan Keberagaman": ["kesetaraan", "keberagaman", "diskriminasi"]
+            "Ketenagakerjaan": (
+                ["karyawan", "tenaga kerja", "pekerja"],
+                "Periksa kebijakan ketenagakerjaan dan pemenuhan hak pekerja."
+            ),
+            "Keselamatan dan Kesehatan Kerja": (
+                ["keselamatan kerja", "kesehatan kerja", "k3"],
+                "Periksa penerapan program keselamatan dan kesehatan kerja."
+            ),
+            "Pelatihan dan Pengembangan": (
+                ["pelatihan", "pengembangan kompetensi"],
+                "Periksa program pelatihan dan pengembangan kompetensi karyawan."
+            ),
+            "Hak Asasi Manusia": (
+                ["hak asasi manusia", "ham", "hak pekerja"],
+                "Periksa kebijakan perlindungan hak asasi manusia."
+            ),
+            "Masyarakat": (
+                ["masyarakat", "pemberdayaan masyarakat", "program sosial"],
+                "Periksa pelaksanaan program tanggung jawab sosial masyarakat."
+            ),
+            "Kesetaraan dan Keberagaman": (
+                ["kesetaraan", "keberagaman", "diskriminasi"],
+                "Periksa kebijakan kesetaraan dan pencegahan diskriminasi."
+            )
         },
         "Governance": {
-            "Struktur Tata Kelola": ["direksi", "dewan komisaris", "komisaris"],
-            "Etika Bisnis": ["kode etik", "etika bisnis", "perilaku bisnis"],
-            "Anti Korupsi": ["anti korupsi", "antikorupsi", "gratifikasi"],
-            "Manajemen Risiko": ["manajemen risiko", "pengelolaan risiko"],
-            "Kepatuhan": ["kepatuhan", "peraturan", "regulasi"],
-            "Transparansi": ["transparansi", "keterbukaan informasi"],
-            "Komite Audit": ["komite audit", "audit internal"]
+            "Struktur Tata Kelola": (
+                ["direksi", "dewan komisaris", "komisaris"],
+                "Periksa kelengkapan informasi struktur dan tanggung jawab tata kelola."
+            ),
+            "Etika Bisnis": (
+                ["kode etik", "etika bisnis", "perilaku bisnis"],
+                "Periksa penerapan kode etik dan kebijakan perilaku bisnis."
+            ),
+            "Anti Korupsi": (
+                ["anti korupsi", "antikorupsi", "gratifikasi"],
+                "Periksa kebijakan pencegahan korupsi dan gratifikasi."
+            ),
+            "Manajemen Risiko": (
+                ["manajemen risiko", "pengelolaan risiko"],
+                "Periksa penerapan identifikasi dan pengelolaan risiko."
+            ),
+            "Kepatuhan": (
+                ["kepatuhan", "peraturan", "regulasi"],
+                "Periksa informasi kepatuhan terhadap peraturan yang berlaku."
+            ),
+            "Transparansi": (
+                ["transparansi", "keterbukaan informasi"],
+                "Periksa keterbukaan informasi dan transparansi perusahaan."
+            ),
+            "Komite Audit": (
+                ["komite audit", "audit internal"],
+                "Periksa fungsi dan pelaksanaan pengawasan audit internal."
+            )
         }
     }
 
     if not teks:
         st.warning("Silakan unggah dokumen PDF terlebih dahulu.")
     else:
-        for aspek, daftar in indikator_esg.items():
-            st.subheader(aspek)
+        hasil_temuan = []
 
-            for nama, kata_kunci in daftar.items():
-                ditemukan = any(kata in teks for kata in kata_kunci)
+        for aspek, daftar in indikator_esg.items():
+            for nama, data in daftar.items():
+                kata_kunci, rekomendasi = data
+                ditemukan = [
+                    kata for kata in kata_kunci if kata in teks
+                ]
 
                 if ditemukan:
-                    st.success(f"{nama}: Informasi ditemukan")
+                    status = "Informasi ditemukan"
+                    rekomendasi_hasil = (
+                        "Verifikasi kecukupan bukti dan kesesuaian "
+                        "informasi dengan indikator ESG."
+                    )
                 else:
-                    st.error(f"{nama}: Informasi tidak ditemukan")
+                    status = "Informasi tidak ditemukan"
+                    rekomendasi_hasil = rekomendasi
+
+                hasil_temuan.append({
+                    "Aspek ESG": aspek,
+                    "Indikator": nama,
+                    "Status": status,
+                    "Kata Kunci": ", ".join(ditemukan) if ditemukan else "-",
+                    "Rekomendasi": rekomendasi_hasil
+                })
+
+        total_temuan = len(hasil_temuan)
+        perlu_diperiksa = sum(
+            1 for item in hasil_temuan
+            if item["Status"] == "Informasi tidak ditemukan"
+        )
+
+        kolom1, kolom2 = st.columns(2)
+
+        kolom1.metric("Total Indikator", total_temuan)
+        kolom2.metric("Perlu Pemeriksaan Lanjutan", perlu_diperiksa)
+
+        st.subheader("Daftar Temuan dan Rekomendasi")
+
+        for aspek in ["Environmental", "Social", "Governance"]:
+            st.markdown(f"### {aspek}")
+
+            data_aspek = [
+                item for item in hasil_temuan
+                if item["Aspek ESG"] == aspek
+            ]
+
+            for item in data_aspek:
+                with st.expander(item["Indikator"]):
+                    st.write("**Status:**", item["Status"])
+                    st.write("**Kata kunci:**", item["Kata Kunci"])
+                    st.write("**Rekomendasi:**", item["Rekomendasi"])
+
+        st.info(
+            "Catatan: Hasil ini merupakan indikasi awal berdasarkan "
+            "pencocokan kata kunci, bukan temuan audit yang telah "
+            "terverifikasi. Setiap hasil perlu diperiksa kembali "
+            "oleh auditor."
+        )
+
 
 elif menu == "Laporan Audit":
     st.title("📑 Laporan Audit")
