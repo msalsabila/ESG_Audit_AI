@@ -90,19 +90,21 @@ elif menu == "Unggah Dokumen":
                 teks_pdf += f"\n--- HALAMAN {nomor} ---\n"
                 teks_pdf += teks
 
+        
             if teks_pdf.strip():
-    st.subheader("Isi Dokumen PDF")
+                st.subheader("Isi Dokumen PDF")
 
-    if st.button("📄 Lihat Isi Dokumen"):
-        st.text_area(
-            "Teks yang berhasil dibaca",
-            teks_pdf,
-            height=400
-        )
+                if st.button("📄 Lihat Isi Dokumen"):
+                    st.text_area(
+                        "Teks yang berhasil dibaca",
+                        teks_pdf,
+                        height=400
+                    )
             else:
                 st.warning(
                     "Teks tidak ditemukan. PDF mungkin berupa hasil scan."
                 )
+
 
         except Exception as e:
             st.error(f"Dokumen gagal dibaca: {e}")
