@@ -261,8 +261,51 @@ elif menu == "Analisis Dokumen AI":
         )
 
 elif menu == "Temuan Audit":
-    st.title("📋 Temuan Audit")
-    st.write("Halaman hasil temuan pemeriksaan ESG.")
+    st.title("📋 Temuan Audit ESG")
+    st.write("Daftar hasil pemeriksaan berdasarkan dokumen perusahaan.")
+
+    teks = st.session_state["teks_pdf"].lower()
+
+    indikator_esg = {
+        "Environmental": {
+            "Emisi dan Gas Rumah Kaca": ["emisi", "gas rumah kaca", "karbon"],
+            "Penggunaan Energi": ["energi", "listrik", "bahan bakar"],
+            "Pengelolaan Air": ["air", "limbah cair", "penggunaan air"],
+            "Pengelolaan Limbah": ["limbah", "sampah", "daur ulang"],
+            "Keanekaragaman Hayati": ["keanekaragaman hayati", "deforestasi", "konservasi"]
+        },
+        "Social": {
+            "Ketenagakerjaan": ["karyawan", "tenaga kerja", "pekerja"],
+            "Keselamatan dan Kesehatan Kerja": ["keselamatan kerja", "kesehatan kerja", "k3"],
+            "Pelatihan dan Pengembangan": ["pelatihan", "pengembangan kompetensi"],
+            "Hak Asasi Manusia": ["hak asasi manusia", "ham", "hak pekerja"],
+            "Masyarakat": ["masyarakat", "pemberdayaan masyarakat", "program sosial"],
+            "Kesetaraan dan Keberagaman": ["kesetaraan", "keberagaman", "diskriminasi"]
+        },
+        "Governance": {
+            "Struktur Tata Kelola": ["direksi", "dewan komisaris", "komisaris"],
+            "Etika Bisnis": ["kode etik", "etika bisnis", "perilaku bisnis"],
+            "Anti Korupsi": ["anti korupsi", "antikorupsi", "gratifikasi"],
+            "Manajemen Risiko": ["manajemen risiko", "pengelolaan risiko"],
+            "Kepatuhan": ["kepatuhan", "peraturan", "regulasi"],
+            "Transparansi": ["transparansi", "keterbukaan informasi"],
+            "Komite Audit": ["komite audit", "audit internal"]
+        }
+    }
+
+    if not teks:
+        st.warning("Silakan unggah dokumen PDF terlebih dahulu.")
+    else:
+        for aspek, daftar in indikator_esg.items():
+            st.subheader(aspek)
+
+            for nama, kata_kunci in daftar.items():
+                ditemukan = any(kata in teks for kata in kata_kunci)
+
+                if ditemukan:
+                    st.success(f"{nama}: Informasi ditemukan")
+                else:
+                    st.error(f"{nama}: Informasi tidak ditemukan")
 
 elif menu == "Laporan Audit":
     st.title("📑 Laporan Audit")
