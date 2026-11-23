@@ -416,6 +416,50 @@ elif menu == "Temuan Audit":
         )
 
 
+
 elif menu == "Laporan Audit":
-    st.title("📑 Laporan Audit")
-    st.write("Halaman penyusunan laporan hasil audit ESG.")
+    st.title("📑 Laporan Hasil Audit ESG")
+    st.write(
+        "Penyusunan laporan hasil pemeriksaan dokumen "
+        "Environmental, Social, dan Governance."
+    )
+
+    teks = st.session_state["teks_pdf"]
+
+    if not teks.strip():
+        st.warning("Silakan unggah dokumen PDF terlebih dahulu.")
+    else:
+        st.subheader("Identitas Pemeriksaan")
+
+        nama_perusahaan = st.text_input(
+            "Nama Perusahaan",
+            placeholder="Masukkan nama perusahaan"
+        )
+
+        nama_dokumen = st.text_input(
+            "Nama Dokumen",
+            placeholder="Contoh: Laporan Keberlanjutan 2025"
+        )
+
+        tanggal = st.date_input("Tanggal Pemeriksaan")
+
+        st.divider()
+        st.subheader("Ringkasan Pemeriksaan")
+
+        st.write("Dokumen berhasil dibaca dan siap disusun menjadi laporan.")
+
+        st.write("**Nama Perusahaan:**", nama_perusahaan or "-")
+        st.write("**Nama Dokumen:**", nama_dokumen or "-")
+        st.write("**Tanggal Pemeriksaan:**", tanggal)
+
+        st.info(
+            "Laporan ini merupakan hasil pemeriksaan awal "
+            "berdasarkan dokumen yang diunggah."
+        )
+
+        st.text_area(
+            "Isi Dokumen yang Menjadi Dasar Pemeriksaan",
+            teks,
+            height=200
+        )
+
