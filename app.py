@@ -1,5 +1,6 @@
 
 import streamlit as st
+from pypdf import PdfReader
 
 st.set_page_config(
     page_title="Sistem Audit ESG Berbasis AI",
