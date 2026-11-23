@@ -166,7 +166,30 @@ elif menu == "Audit Sosial":
 
 elif menu == "Audit Tata Kelola":
     st.title("🏢 Audit Tata Kelola")
-    st.write("Halaman pemeriksaan tata kelola perusahaan.")
+    st.write("Pemeriksaan informasi tata kelola berdasarkan dokumen perusahaan.")
+
+    teks = st.session_state["teks_pdf"].lower()
+
+    indikator = {
+        "Struktur Tata Kelola": ["direksi", "dewan komisaris", "komisaris"],
+        "Etika Bisnis": ["kode etik", "etika bisnis", "perilaku bisnis"],
+        "Anti Korupsi": ["anti korupsi", "antikorupsi", "gratifikasi"],
+        "Manajemen Risiko": ["manajemen risiko", "pengelolaan risiko"],
+        "Kepatuhan": ["kepatuhan", "peraturan", "regulasi"],
+        "Transparansi": ["transparansi", "keterbukaan informasi"],
+        "Komite Audit": ["komite audit", "audit internal"]
+    }
+
+    if not teks:
+        st.warning("Silakan unggah dokumen PDF terlebih dahulu.")
+    else:
+        for nama, kata_kunci in indikator.items():
+            ditemukan = any(kata in teks for kata in kata_kunci)
+
+            if ditemukan:
+                st.success(f"{nama}: Informasi ditemukan")
+            else:
+                st.warning(f"{nama}: Informasi tidak ditemukan")
 
 elif menu == "Analisis Dokumen AI":
     st.title("🤖 Analisis Dokumen dengan AI")
