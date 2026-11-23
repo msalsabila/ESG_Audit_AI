@@ -422,59 +422,33 @@ elif menu == "Temuan Audit":
         )
 
 
-
 elif menu == "Laporan Audit":
-    st.title("📑 Laporan Hasil Audit ESG")
-    st.write(
-        "Penyusunan laporan hasil pemeriksaan dokumen "
-        "Environmental, Social, dan Governance."
-    )
+    st.title("📑 Laporan Audit ESG")
+    st.write("Ringkasan hasil pemeriksaan dokumen berdasarkan indikator ESG.")
 
-    teks = st.session_state["teks_pdf"]
+    teks = st.session_state.get("teks_pdf", "")
 
     if not teks.strip():
-        st.warning("Silakan unggah dokumen PDF terlebih dahulu.")
+        st.warning("Silakan unggah dokumen PDF terlebih dahulu pada menu Unggah Dokumen.")
+
     else:
-        st.subheader("Identitas Pemeriksaan")
+        # Identitas pemeriksaan
+        st.subheader("1. Identitas Pemeriksaan")
 
-        nama_perusahaan = st.text_input(
-            "Nama Perusahaan",
-            placeholder="Masukkan nama perusahaan"
-        )
-
-        nama_dokumen = st.text_input(
-            "Nama Dokumen",
-            placeholder="Contoh: Laporan Keberlanjutan 2025"
-        )
-
+        nama_perusahaan = st.text_input("Nama Perusahaan")
+        nama_dokumen = st.text_input("Nama Dokumen")
         tanggal = st.date_input("Tanggal Pemeriksaan")
 
-        st.divider()
-        st.subheader("Ringkasan Pemeriksaan")
-
-        st.write("Dokumen berhasil dibaca dan siap disusun menjadi laporan.")
-
-        st.write("**Nama Perusahaan:**", nama_perusahaan or "-")
-        st.write("**Nama Dokumen:**", nama_dokumen or "-")
-        st.write("**Tanggal Pemeriksaan:**", tanggal)
-
-        st.info(
-            "Laporan ini merupakan hasil pemeriksaan awal "
-            "berdasarkan dokumen yang diunggah."
-        )
-        
-        st.divider()
-        st.subheader("Hasil Pemeriksaan ESG")
-
+        # Indikator ESG
         indikator_esg = {
-            "Environmental": {
+            "Lingkungan": {
                 "Emisi dan Gas Rumah Kaca": ["emisi", "gas rumah kaca", "karbon"],
                 "Penggunaan Energi": ["energi", "listrik", "bahan bakar"],
                 "Pengelolaan Air": ["air", "limbah cair", "penggunaan air"],
                 "Pengelolaan Limbah": ["limbah", "sampah", "daur ulang"],
                 "Keanekaragaman Hayati": ["keanekaragaman hayati", "deforestasi", "konservasi"]
             },
-            "Social": {
+            "Sosial": {
                 "Ketenagakerjaan": ["karyawan", "tenaga kerja", "pekerja"],
                 "Keselamatan dan Kesehatan Kerja": ["keselamatan kerja", "kesehatan kerja", "k3"],
                 "Pelatihan dan Pengembangan": ["pelatihan", "pengembangan kompetensi"],
@@ -482,7 +456,7 @@ elif menu == "Laporan Audit":
                 "Masyarakat": ["masyarakat", "pemberdayaan masyarakat", "program sosial"],
                 "Kesetaraan dan Keberagaman": ["kesetaraan", "keberagaman", "diskriminasi"]
             },
-            "Governance": {
+            "Tata Kelola": {
                 "Struktur Tata Kelola": ["direksi", "dewan komisaris", "komisaris"],
                 "Etika Bisnis": ["kode etik", "etika bisnis", "perilaku bisnis"],
                 "Anti Korupsi": ["anti korupsi", "antikorupsi", "gratifikasi"],
@@ -493,83 +467,162 @@ elif menu == "Laporan Audit":
             }
         }
 
+        # Pemeriksaan indikator
+        hasil = {}
         total = 0
-        jumlah_ditemukan = 0
+        ditemukan = 0
 
-        for aspek, daftar in indikator_esg.items():
-            st.markdown(f"### {aspek}")
+        for aspek, indikator in indikator_esg.items():
+            hasil[aspek] = {}
 
-            ditemukan_aspek = 0
-
-            for nama, kata_kunci in daftar.items():
+            for nama, kata_kunci in indikator.items():
                 total += 1
-                status = any(kata in teks.lower() for kata in kata_kunci)
+
+                status = any(
+                    kata.lower() in teks.lower()
+                    for kata in kata_kunci
+                )
+
+                hasil[aspek][nama] = status
 
                 if status:
-                    jumlah_ditemukan += 1
-                    ditemukan_aspek += 1
-                    st.success(f"{nama}: Informasi ditemukan")
-                else:
-                    st.warning(f"{nama}: Informasi tidak ditemukan")
+                    ditemukan += 1
 
-            st.write(
-                f"Indikator ditemukan: {ditemukan_aspek} "
-                f"dari {len(daftar)}"
-            )
+        belum = total - ditemukan
+        cakupan = (ditemukan / total) * 100
 
-        belum_ditemukan = total - jumlah_ditemukan
-        cakupan = (jumlah_ditemukan / total) * 100
-
+        # Ringkasan audit
         st.divider()
-        st.subheader("Ringkasan Hasil Audit")
+        st.subheader("2. Ringkasan Hasil Audit")
 
         kolom1, kolom2, kolom3 = st.columns(3)
 
         kolom1.metric("Total Indikator", total)
-        kolom2.metric("Informasi Ditemukan", jumlah_ditemukan)
-        kolom3.metric("Belum Ditemukan", belum_ditemukan)
+        kolom2.metric("Terdeteksi", ditemukan)
+        kolom3.metric("Belum Terdeteksi", belum)
 
-        st.metric("Cakupan Informasi ESG", f"{cakupan:.1f}%")
-        
+        st.progress(cakupan / 100)
+        st.write(f"**Cakupan informasi ESG: {cakupan:.1f}%**")
+
+        # Hasil per aspek
         st.divider()
-        st.subheader("Rekomendasi Tindak Lanjut Audit")
+        st.subheader("3. Hasil Pemeriksaan per Aspek")
 
-        jumlah_rekomendasi = 0
+        ringkasan = []
 
-        for aspek, daftar in indikator_esg.items():
-            st.markdown(f"### {aspek}")
+        for aspek, indikator in hasil.items():
+            jumlah = len(indikator)
+            jumlah_ada = sum(indikator.values())
 
-            for nama, kata_kunci in daftar.items():
-                ditemukan = any(
-                    kata in teks.lower()
-                    for kata in kata_kunci
-                )
+            ringkasan.append({
+                "Aspek": aspek,
+                "Total Indikator": jumlah,
+                "Terdeteksi": jumlah_ada,
+                "Belum Terdeteksi": jumlah - jumlah_ada
+            })
 
-                if not ditemukan:
-                    jumlah_rekomendasi += 1
+        st.dataframe(ringkasan, use_container_width=True, hide_index=True)
 
-                    with st.expander(f"Rekomendasi: {nama}"):
-                        st.write(
-                            f"Informasi mengenai {nama.lower()} "
-                            "belum ditemukan dalam dokumen."
+        # Rincian temuan
+        st.divider()
+        st.subheader("4. Temuan dan Rekomendasi")
+
+        for aspek, indikator in hasil.items():
+            with st.expander(f"Hasil Pemeriksaan {aspek}"):
+                for nama, status in indikator.items():
+                    if status:
+                        st.write(f"✅ **{nama}** — Kata kunci terdeteksi.")
+                    else:
+                        st.write(f"⚠️ **{nama}** — Informasi belum terdeteksi.")
+                        st.caption(
+                            "Rekomendasi: Periksa kembali dokumen dan "
+                            "lengkapi informasi serta bukti pendukung terkait indikator ini."
                         )
 
-                        st.write(
-                            "**Saran:** Perusahaan perlu melengkapi "
-                            "informasi, kebijakan, data, dan bukti "
-                            "pendukung terkait indikator tersebut."
-                        )
+        # Kesimpulan
+        st.divider()
+        st.subheader("5. Kesimpulan Audit")
 
-        if jumlah_rekomendasi == 0:
-            st.success(
-                "Seluruh indikator memiliki informasi yang terdeteksi. "
-                "Tetap lakukan verifikasi atas kecukupan bukti."
-            )
-
-
-        st.text_area(
-            "Isi Dokumen yang Menjadi Dasar Pemeriksaan",
-            teks,
-            height=200
+        st.write(
+            f"Berdasarkan pemeriksaan awal terhadap dokumen, "
+            f"ditemukan {ditemukan} dari {total} indikator ESG "
+            f"dengan cakupan informasi sebesar {cakupan:.1f}%. "
+            f"Terdapat {belum} indikator yang belum terdeteksi "
+            f"dan perlu ditinjau lebih lanjut."
         )
 
+        st.info(
+            "Catatan: Hasil ini merupakan pemeriksaan awal berbasis "
+            "pencocokan kata kunci, bukan kesimpulan audit atau verifikasi "
+            "kepatuhan ESG secara menyeluruh."
+        )
+
+        # Membuat laporan PDF
+        st.divider()
+        st.subheader("6. Unduh Laporan")
+
+        if st.button("📄 Buat Laporan PDF", type="primary"):
+            if not nama_perusahaan.strip():
+                st.error("Silakan isi nama perusahaan terlebih dahulu.")
+            elif not nama_dokumen.strip():
+                st.error("Silakan isi nama dokumen terlebih dahulu.")
+            else:
+                isi_laporan = [
+                    f"Nama Perusahaan: {nama_perusahaan}",
+                    f"Nama Dokumen: {nama_dokumen}",
+                    f"Tanggal Pemeriksaan: {tanggal}",
+                    "",
+                    "RINGKASAN HASIL AUDIT",
+                    f"Total indikator: {total}",
+                    f"Indikator terdeteksi: {ditemukan}",
+                    f"Indikator belum terdeteksi: {belum}",
+                    f"Cakupan informasi ESG: {cakupan:.1f}%",
+                    "",
+                    "HASIL PEMERIKSAAN PER ASPEK"
+                ]
+
+                for aspek, indikator in hasil.items():
+                    jumlah = len(indikator)
+                    jumlah_ada = sum(indikator.values())
+
+                    isi_laporan.append(
+                        f"{aspek}: {jumlah_ada} dari {jumlah} indikator terdeteksi"
+                    )
+
+                isi_laporan.extend(["", "RINCIAN TEMUAN DAN REKOMENDASI"])
+
+                for aspek, indikator in hasil.items():
+                    isi_laporan.append(aspek.upper())
+
+                    for nama, status in indikator.items():
+                        if status:
+                            isi_laporan.append(
+                                f"{nama}: Kata kunci terdeteksi."
+                            )
+                        else:
+                            isi_laporan.append(
+                                f"{nama}: Belum terdeteksi. "
+                                "Rekomendasi: Lengkapi informasi dan bukti pendukung."
+                            )
+
+                isi_laporan.extend([
+                    "",
+                    "KESIMPULAN",
+                    f"Ditemukan {ditemukan} dari {total} indikator ESG "
+                    f"dengan cakupan {cakupan:.1f}%.",
+                    "",
+                    "Catatan: Pemeriksaan awal berbasis pencocokan kata kunci "
+                    "dan bukan verifikasi kepatuhan ESG secara menyeluruh."
+                ])
+
+                pdf = buat_pdf_laporan(
+                    "LAPORAN HASIL AUDIT ESG",
+                    "\n".join(isi_laporan)
+                )
+
+                st.download_button(
+                    label="⬇️ Unduh Laporan Audit PDF",
+                    data=pdf,
+                    file_name="Laporan_Audit_ESG.pdf",
+                    mime="application/pdf"
+                )
