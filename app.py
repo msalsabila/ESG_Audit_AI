@@ -1,3 +1,4 @@
+
 import streamlit as st
 
 st.set_page_config(
@@ -6,35 +7,81 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🌱 SISTEM AUDIT ESG BERBASIS AI")
+# Identitas aplikasi
+st.sidebar.title("🌱 ESG AUDIT AI")
+st.sidebar.caption("Sistem Audit Berbasis Kecerdasan Buatan")
+st.sidebar.markdown("---")
 
-st.subheader(
-    "Aplikasi Analisis Dokumen Lingkungan, Sosial, dan Tata Kelola"
+# Menu navigasi
+menu = st.sidebar.radio(
+    "MENU NAVIGASI",
+    [
+        "Beranda",
+        "Unggah Dokumen",
+        "Audit Lingkungan",
+        "Audit Sosial",
+        "Audit Tata Kelola",
+        "Analisis Dokumen AI",
+        "Temuan Audit",
+        "Laporan Audit"
+    ]
 )
 
-st.write(
-    "Selamat datang di Sistem Audit ESG Berbasis AI. "
-    "Aplikasi ini membantu pengguna menganalisis dokumen perusahaan "
-    "berdasarkan aspek lingkungan, sosial, dan tata kelola."
-)
+st.sidebar.markdown("---")
+st.sidebar.caption("Versi 1.0 | Proyek Akademik")
 
-st.info(
-    "Silakan unggah dokumen perusahaan untuk memulai proses analisis ESG."
-)
+# Halaman Beranda
+if menu == "Beranda":
+    st.title("🌱 Sistem Audit ESG Berbasis AI")
+    st.subheader("Selamat Datang di Dashboard ESG Audit AI")
 
-st.markdown("### Aspek Audit ESG")
+    st.write(
+        "Aplikasi ini membantu proses analisis dokumen "
+        "perusahaan berdasarkan aspek lingkungan, sosial, "
+        "dan tata kelola."
+    )
 
-kolom1, kolom2, kolom3 = st.columns(3)
+    st.info(
+        "Silakan pilih menu di sebelah kiri untuk memulai "
+        "proses audit ESG."
+    )
 
-with kolom1:
-    st.success("🌳 LINGKUNGAN")
+    kolom1, kolom2, kolom3 = st.columns(3)
 
-with kolom2:
-    st.warning("👥 SOSIAL")
+    with kolom1:
+        st.success("🌳 AUDIT LINGKUNGAN")
 
-with kolom3:
-    st.info("🏢 TATA KELOLA")
+    with kolom2:
+        st.warning("👥 AUDIT SOSIAL")
 
-st.markdown("---")
+    with kolom3:
+        st.info("🏢 AUDIT TATA KELOLA")
 
-st.caption("Sistem Audit ESG Berbasis AI | Untuk Keperluan Akademik")
+# Halaman lainnya
+elif menu == "Unggah Dokumen":
+    st.title("📂 Unggah Dokumen")
+    st.write("Halaman untuk mengunggah dokumen perusahaan.")
+
+elif menu == "Audit Lingkungan":
+    st.title("🌳 Audit Lingkungan")
+    st.write("Halaman pemeriksaan aspek lingkungan.")
+
+elif menu == "Audit Sosial":
+    st.title("👥 Audit Sosial")
+    st.write("Halaman pemeriksaan aspek sosial.")
+
+elif menu == "Audit Tata Kelola":
+    st.title("🏢 Audit Tata Kelola")
+    st.write("Halaman pemeriksaan tata kelola perusahaan.")
+
+elif menu == "Analisis Dokumen AI":
+    st.title("🤖 Analisis Dokumen dengan AI")
+    st.write("Halaman analisis isi dokumen perusahaan.")
+
+elif menu == "Temuan Audit":
+    st.title("📋 Temuan Audit")
+    st.write("Halaman hasil temuan pemeriksaan ESG.")
+
+elif menu == "Laporan Audit":
+    st.title("📑 Laporan Audit")
+    st.write("Halaman penyusunan laporan hasil audit ESG.")
