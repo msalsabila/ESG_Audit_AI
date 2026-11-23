@@ -687,6 +687,8 @@ for aspek, indikator in hasil.items():
 
                 isi_laporan.extend(["", "RINCIAN TEMUAN DAN REKOMENDASI"])
 
+                             isi_laporan.extend(["", "RINCIAN TEMUAN DAN REKOMENDASI"])
+
                 for aspek, indikator in hasil.items():
                     isi_laporan.append(aspek.upper())
 
@@ -700,8 +702,7 @@ for aspek, indikator in hasil.items():
                                 f"{nama}: Belum terdeteksi. "
                                 "Rekomendasi: Lengkapi informasi dan bukti pendukung."
                             )
-
-                isi_laporan.extend([
+isi_laporan.extend([
                     "",
                     "KESIMPULAN",
                     f"Ditemukan {ditemukan} dari {total} indikator ESG "
