@@ -194,7 +194,9 @@ def buat_pdf_laporan(judul, isi):
 
             konten.append(Spacer(1, 7))
 
-
+  def nomor_halaman(canvas, dokumen):
+        canvas.saveState()
+      
         # Garis pemisah footer
         canvas.setStrokeColor(colors.HexColor("#17365D"))
         canvas.setLineWidth(0.8)
@@ -227,7 +229,6 @@ def buat_pdf_laporan(judul, isi):
 
     buffer.seek(0)
     return buffer.getvalue()
-
 
 st.set_page_config(
     page_title="Sistem Audit ESG Berbasis AI",
