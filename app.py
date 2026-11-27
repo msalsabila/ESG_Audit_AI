@@ -194,7 +194,7 @@ def buat_pdf_laporan(judul, isi):
 
             konten.append(Spacer(1, 7))
 
-  def nomor_halaman(canvas, dokumen):
+    def nomor_halaman(canvas, dokumen):
         canvas.saveState()
       
         # Garis pemisah footer
