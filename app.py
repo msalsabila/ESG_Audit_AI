@@ -116,7 +116,7 @@ def buat_pdf_laporan(judul, isi):
 
     # HALAMAN SAMPUL LAPORAN
     # Desain sampul akan digambar melalui canvas
-    konten.append(Spacer(1, 740))
+    konten.append(Spacer(1, 700))
     konten.append(PageBreak())
 
     # Tabel hasil pemeriksaan ESG
