@@ -26,8 +26,10 @@ def buat_pdf_laporan(judul, isi):
         bottomMargin=45
     )
 
+
     gaya = getSampleStyleSheet()
-        gaya_sampul = ParagraphStyle(
+
+    gaya_sampul = ParagraphStyle(
         "GayaSampul",
         parent=gaya["Title"],
         fontSize=26,
@@ -58,8 +60,9 @@ def buat_pdf_laporan(judul, isi):
     gaya["Title"].textColor = colors.HexColor("#17365D")
     gaya["Title"].alignment = 1
 
-    konten = []
-        # HALAMAN SAMPUL LAPORAN
+     konten = []
+
+    # HALAMAN SAMPUL LAPORAN
     konten.append(Spacer(1, 100))
 
     konten.append(Paragraph(
@@ -107,10 +110,12 @@ def buat_pdf_laporan(judul, isi):
 
     konten.append(PageBreak())
 
+
     # Tabel hasil pemeriksaan ESG
     data_tabel = [
         ["Aspek ESG", "Total", "Terdeteksi", "Belum Terdeteksi"]
     ]
+
     for baris in isi.split("\n"):
         if baris.startswith("DATA_TABEL|"):
             bagian = baris.split("|")
@@ -127,7 +132,6 @@ def buat_pdf_laporan(judul, isi):
     )
 
     tabel.setStyle(TableStyle([
-    tabel.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#17365D")),
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
         ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
@@ -143,9 +147,9 @@ def buat_pdf_laporan(judul, isi):
         ("LEFTPADDING", (0, 0), (-1, -1), 6),
         ("RIGHTPADDING", (0, 0), (-1, -1), 6),
     ]))
-    ]))
 
     konten.append(tabel)
+
     konten.append(Spacer(1, 20))
     gaya_bagian = ParagraphStyle(
         "GayaBagian",
@@ -184,7 +188,6 @@ def buat_pdf_laporan(judul, isi):
                 )
 
             konten.append(Spacer(1, 7))
-
 
    
     def nomor_halaman(canvas, dokumen):
