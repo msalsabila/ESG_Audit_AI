@@ -14,7 +14,7 @@ if "teks_pdf" not in st.session_state:
     st.session_state["teks_pdf"] = ""
 
 
-def desain_sampul(canvas, dokumen):
+def desain_sampul(canvas, dokumen, nama_perusahaan, tanggal_pemeriksaan):
     canvas.saveState()
 
     lebar, tinggi = A4
@@ -64,7 +64,21 @@ def desain_sampul(canvas, dokumen):
         45, tinggi - 280,
         "Laporan Pemeriksaan Dokumen Perusahaan"
     )
+    
+    # Identitas perusahaan dan tanggal pemeriksaan
+    canvas.setFont("Helvetica-Bold", 10)
+    canvas.setFillColor(colors.HexColor("#17365D"))
+    canvas.drawString(
+        45, tinggi - 325,
+        f"Nama Perusahaan: {nama_perusahaan}"
+    )
 
+    canvas.setFont("Helvetica", 10)
+    canvas.setFillColor(colors.HexColor("#555555"))
+    canvas.drawString(
+        45, tinggi - 345,
+        f"Tanggal Pemeriksaan: {tanggal_pemeriksaan}"
+    )
     canvas.restoreState()
 
 def buat_pdf_laporan(judul, isi):
@@ -201,11 +215,26 @@ def buat_pdf_laporan(judul, isi):
                 )
 
             konten.append(Spacer(1, 7))
+    # Mengambil identitas perusahaan dari isi laporan
+    nama_perusahaan = "Tidak dicantumkan"
+    tanggal_pemeriksaan = "Tidak dicantumkan"
+
+    for baris in isi.split("\n"):
+        if baris.startswith("Nama Perusahaan:"):
+            nama_perusahaan = baris.split(":", 1)[1].strip()
+
+        elif baris.startswith("Tanggal Pemeriksaan:"):
+            tanggal_pemeriksaan = baris.split(":", 1)[1].strip()
     def nomor_halaman(canvas, dokumen):
 
         # Desain khusus untuk halaman sampul
         if dokumen.page == 1:
-            desain_sampul(canvas, dokumen)
+            desain_sampul(
+                canvas,
+                dokumen,
+                nama_perusahaan,
+                tanggal_pemeriksaan
+            )
             return
 
         # Footer untuk halaman berikutnya
