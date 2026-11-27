@@ -65,18 +65,18 @@ def desain_sampul(canvas, dokumen, nama_perusahaan, tanggal_pemeriksaan):
         "Laporan Pemeriksaan Dokumen Perusahaan"
     )
     
-    # Identitas perusahaan dan tanggal pemeriksaan
+     # Identitas perusahaan dan tanggal pemeriksaan
     canvas.setFont("Helvetica-Bold", 10)
     canvas.setFillColor(colors.HexColor("#17365D"))
     canvas.drawString(
-        45, tinggi - 325,
+        45, tinggi - 380,
         f"Nama Perusahaan: {nama_perusahaan}"
     )
 
     canvas.setFont("Helvetica", 10)
     canvas.setFillColor(colors.HexColor("#555555"))
     canvas.drawString(
-        45, tinggi - 345,
+        45, tinggi - 402,
         f"Tanggal Pemeriksaan: {tanggal_pemeriksaan}"
     )
     canvas.restoreState()
