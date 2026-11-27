@@ -161,6 +161,7 @@ def buat_pdf_laporan(judul, isi):
         spaceAfter=8
     )
   
+
     # Isi laporan lainnya
     judul_bagian = [
         "RINGKASAN HASIL AUDIT",
@@ -171,6 +172,10 @@ def buat_pdf_laporan(judul, isi):
 
     for baris in isi.split("\n"):
         if baris.strip() and not baris.startswith("DATA_TABEL|"):
+
+            # Memulai rincian temuan pada halaman baru
+            if baris.strip().upper() == "RINCIAN TEMUAN DAN REKOMENDASI":
+                konten.append(PageBreak())
 
             if baris.strip().upper() in judul_bagian:
                 konten.append(
@@ -189,9 +194,6 @@ def buat_pdf_laporan(judul, isi):
 
             konten.append(Spacer(1, 7))
 
-   
-    def nomor_halaman(canvas, dokumen):
-        canvas.saveState()
 
         # Garis pemisah footer
         canvas.setStrokeColor(colors.HexColor("#17365D"))
@@ -812,10 +814,10 @@ elif menu == "Laporan Audit":
                         f"sedangkan {jumlah_belum} indikator belum terdeteksi."
                     )
 
-                isi_laporan.extend([
-                    "",
-                    "RINCIAN TEMUAN DAN REKOMENDASI"
-                ])
+              isi_laporan.extend([
+    "",
+    "RINCIAN TEMUAN DAN REKOMENDASI"
+])
 
                 for aspek, indikator in hasil.items():
                     isi_laporan.append(aspek.upper())
