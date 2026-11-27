@@ -818,9 +818,6 @@ elif menu == "Laporan Audit":
                     "RINCIAN TEMUAN DAN REKOMENDASI"
                 ])
 
-    "RINCIAN TEMUAN DAN REKOMENDASI"
-])
-
                 for aspek, indikator in hasil.items():
                     isi_laporan.append(aspek.upper())
 
