@@ -6,8 +6,8 @@ from pypdf import PdfReader
 # Library untuk membuat laporan PDF
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from xml.sax.saxutils import escape
 
 if "teks_pdf" not in st.session_state:
@@ -27,28 +27,90 @@ def buat_pdf_laporan(judul, isi):
     )
 
     gaya = getSampleStyleSheet()
+        gaya_sampul = ParagraphStyle(
+        "GayaSampul",
+        parent=gaya["Title"],
+        fontSize=26,
+        leading=34,
+        textColor=colors.HexColor("#17365D"),
+        alignment=1,
+        spaceAfter=20
+    )
+
+    gaya_subjudul = ParagraphStyle(
+        "GayaSubjudul",
+        parent=gaya["Heading2"],
+        fontSize=14,
+        textColor=colors.HexColor("#4776A8"),
+        alignment=1,
+        spaceAfter=15
+    )
+
+    gaya_identitas = ParagraphStyle(
+        "GayaIdentitas",
+        parent=gaya["BodyText"],
+        fontSize=11,
+        leading=20,
+        alignment=1
+    )
 
     gaya["Title"].fontSize = 20
     gaya["Title"].textColor = colors.HexColor("#17365D")
     gaya["Title"].alignment = 1
 
     konten = []
-
-    konten.append(Paragraph(escape(judul), gaya["Title"]))
-    konten.append(Spacer(1, 12))
+        # HALAMAN SAMPUL LAPORAN
+    konten.append(Spacer(1, 100))
 
     konten.append(Paragraph(
-        "ENVIRONMENTAL • SOCIAL • GOVERNANCE",
-        gaya["Heading2"]
+        "LAPORAN HASIL",
+        gaya_sampul
+    ))
+
+    konten.append(Paragraph(
+        "AUDIT ESG",
+        gaya_sampul
     ))
 
     konten.append(Spacer(1, 15))
+
+    konten.append(Paragraph(
+        "ENVIRONMENTAL • SOCIAL • GOVERNANCE",
+        gaya_subjudul
+    ))
+
+    konten.append(Spacer(1, 80))
+
+    konten.append(Paragraph(
+        "Laporan Pemeriksaan Dokumen Perusahaan",
+        gaya_identitas
+    ))
+
+    konten.append(Spacer(1, 30))
+
+    konten.append(Paragraph(
+        "Nama Perusahaan: " + escape(nama_perusahaan),
+        gaya_identitas
+    ))
+
+    konten.append(Paragraph(
+        "Tanggal Pemeriksaan: " + escape(str(tanggal)),
+        gaya_identitas
+    ))
+
+    konten.append(Spacer(1, 100))
+
+    konten.append(Paragraph(
+        "ESG AUDIT AI",
+        gaya_subjudul
+    ))
+
+    konten.append(PageBreak())
 
     # Tabel hasil pemeriksaan ESG
     data_tabel = [
         ["Aspek ESG", "Total", "Terdeteksi", "Belum Terdeteksi"]
     ]
-
     for baris in isi.split("\n"):
         if baris.startswith("DATA_TABEL|"):
             bagian = baris.split("|")
@@ -65,38 +127,91 @@ def buat_pdf_laporan(judul, isi):
     )
 
     tabel.setStyle(TableStyle([
+    tabel.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#17365D")),
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
-        ("ALIGN", (1, 0), (-1, -1), "CENTER"),
         ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTNAME", (0, 1), (-1, -1), "Helvetica"),
         ("FONTSIZE", (0, 0), (-1, -1), 9),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
-        ("TOPPADDING", (0, 0), (-1, -1), 8),
+        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#B7C9D6")),
         ("ROWBACKGROUNDS", (0, 1), (-1, -1),
-         [colors.white, colors.HexColor("#EAF0F6")])
+         [colors.white, colors.HexColor("#EAF0F6")]),
+        ("TOPPADDING", (0, 0), (-1, -1), 10),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+        ("LEFTPADDING", (0, 0), (-1, -1), 6),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+    ]))
     ]))
 
     konten.append(tabel)
     konten.append(Spacer(1, 20))
-
+    gaya_bagian = ParagraphStyle(
+        "GayaBagian",
+        parent=gaya["Heading2"],
+        fontSize=12,
+        leading=16,
+        textColor=colors.HexColor("#17365D"),
+        spaceBefore=10,
+        spaceAfter=8
+    )
+  
     # Isi laporan lainnya
+    judul_bagian = [
+        "RINGKASAN HASIL AUDIT",
+        "HASIL PEMERIKSAAN PER ASPEK",
+        "RINCIAN TEMUAN DAN REKOMENDASI",
+        "KESIMPULAN"
+    ]
+
     for baris in isi.split("\n"):
         if baris.strip() and not baris.startswith("DATA_TABEL|"):
-            konten.append(
-                Paragraph(
-                    escape(baris),
-                    gaya["BodyText"]
+
+            if baris.strip().upper() in judul_bagian:
+                konten.append(
+                    Paragraph(
+                        escape(baris),
+                        gaya_bagian
+                    )
                 )
-            )
+            else:
+                konten.append(
+                    Paragraph(
+                        escape(baris),
+                        gaya["BodyText"]
+                    )
+                )
+
             konten.append(Spacer(1, 7))
 
+
+   
     def nomor_halaman(canvas, dokumen):
         canvas.saveState()
-        canvas.setFont("Helvetica", 9)
+
+        # Garis pemisah footer
+        canvas.setStrokeColor(colors.HexColor("#17365D"))
+        canvas.setLineWidth(0.8)
+        canvas.line(40, 38, 555, 38)
+
+        # Identitas aplikasi
+        canvas.setFont("Helvetica-Bold", 8)
+        canvas.setFillColor(colors.HexColor("#17365D"))
+        canvas.drawString(40, 25, "ESG AUDIT AI")
+
+        # Keterangan laporan
+        canvas.setFont("Helvetica", 8)
         canvas.setFillColor(colors.grey)
-        canvas.drawString(40, 25, "Laporan Audit ESG")
-        canvas.drawRightString(555, 25, f"Halaman {dokumen.page}")
+        canvas.drawCentredString(
+            297.5, 25, "Environmental • Social • Governance"
+        )
+
+        # Nomor halaman
+        canvas.drawRightString(
+            555, 25, f"Halaman {dokumen.page}"
+        )
+
         canvas.restoreState()
 
     dokumen.build(
