@@ -26,7 +26,6 @@ def buat_pdf_laporan(judul, isi):
         bottomMargin=45
     )
 
-
     gaya = getSampleStyleSheet()
 
     gaya_sampul = ParagraphStyle(
@@ -60,7 +59,8 @@ def buat_pdf_laporan(judul, isi):
     gaya["Title"].textColor = colors.HexColor("#17365D")
     gaya["Title"].alignment = 1
 
-     konten = []
+    konten = []
+
 
     # HALAMAN SAMPUL LAPORAN
     konten.append(Spacer(1, 100))
