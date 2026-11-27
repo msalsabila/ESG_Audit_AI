@@ -797,12 +797,19 @@ elif menu == "Laporan Audit":
                     "HASIL PEMERIKSAAN PER ASPEK"
                 ]
 
+             
                 for aspek, indikator in hasil.items():
                     jumlah = len(indikator)
                     jumlah_ada = sum(indikator.values())
+                    jumlah_belum = jumlah - jumlah_ada
 
                     isi_laporan.append(
-                        f"DATA_TABEL|{aspek}|{jumlah}|{jumlah_ada}|{jumlah - jumlah_ada}"
+                        f"DATA_TABEL|{aspek}|{jumlah}|{jumlah_ada}|{jumlah_belum}"
+                    )
+
+                    isi_laporan.append(
+                        f"{aspek}: {jumlah_ada} dari {jumlah} indikator terdeteksi, "
+                        f"sedangkan {jumlah_belum} indikator belum terdeteksi."
                     )
 
                 isi_laporan.extend([
