@@ -14,6 +14,59 @@ if "teks_pdf" not in st.session_state:
     st.session_state["teks_pdf"] = ""
 
 
+def desain_sampul(canvas, dokumen):
+    canvas.saveState()
+
+    lebar, tinggi = A4
+
+    # Latar belakang putih
+    canvas.setFillColor(colors.white)
+    canvas.rect(0, 0, lebar, tinggi, fill=1, stroke=0)
+
+    # Lengkungan dekorasi bagian atas
+    canvas.setFillColor(colors.HexColor("#17365D"))
+    canvas.circle(lebar + 15, tinggi - 10, 145, fill=1, stroke=0)
+
+    canvas.setFillColor(colors.HexColor("#287A4B"))
+    canvas.circle(lebar + 5, tinggi - 5, 105, fill=1, stroke=0)
+
+    # Lengkungan dekorasi bagian bawah
+    canvas.setFillColor(colors.HexColor("#17365D"))
+    canvas.circle(-20, -10, 180, fill=1, stroke=0)
+
+    canvas.setFillColor(colors.HexColor("#287A4B"))
+    canvas.circle(-10, -10, 125, fill=1, stroke=0)
+
+    # Identitas aplikasi
+    canvas.setFillColor(colors.HexColor("#17365D"))
+    canvas.setFont("Helvetica-Bold", 18)
+    canvas.drawString(45, tinggi - 65, "ESG AUDIT AI")
+
+    canvas.setFillColor(colors.HexColor("#287A4B"))
+    canvas.setFont("Helvetica", 9)
+    canvas.drawString(
+        45, tinggi - 82,
+        "ENVIRONMENTAL • SOCIAL • GOVERNANCE"
+    )
+
+    # Judul laporan
+    canvas.setFillColor(colors.HexColor("#17365D"))
+    canvas.setFont("Helvetica-Bold", 27)
+    canvas.drawString(45, tinggi - 210, "LAPORAN HASIL")
+
+    canvas.setFillColor(colors.HexColor("#287A4B"))
+    canvas.drawString(45, tinggi - 248, "AUDIT ESG")
+
+    # Keterangan
+    canvas.setFillColor(colors.HexColor("#555555"))
+    canvas.setFont("Helvetica", 11)
+    canvas.drawString(
+        45, tinggi - 280,
+        "Laporan Pemeriksaan Dokumen Perusahaan"
+    )
+
+    canvas.restoreState()
+
 def buat_pdf_laporan(judul, isi):
     buffer = io.BytesIO()
 
@@ -61,55 +114,10 @@ def buat_pdf_laporan(judul, isi):
 
     konten = []
 
-
     # HALAMAN SAMPUL LAPORAN
-    konten.append(Spacer(1, 100))
-
-    konten.append(Paragraph(
-        "LAPORAN HASIL",
-        gaya_sampul
-    ))
-
-    konten.append(Paragraph(
-        "AUDIT ESG",
-        gaya_sampul
-    ))
-
-    konten.append(Spacer(1, 15))
-
-    konten.append(Paragraph(
-        "ENVIRONMENTAL • SOCIAL • GOVERNANCE",
-        gaya_subjudul
-    ))
-
-    konten.append(Spacer(1, 80))
-
-    konten.append(Paragraph(
-        "Laporan Pemeriksaan Dokumen Perusahaan",
-        gaya_identitas
-    ))
-
-    konten.append(Spacer(1, 30))
-
-    konten.append(Paragraph(
-        "Nama Perusahaan: " + escape(nama_perusahaan),
-        gaya_identitas
-    ))
-
-    konten.append(Paragraph(
-        "Tanggal Pemeriksaan: " + escape(str(tanggal)),
-        gaya_identitas
-    ))
-
-    konten.append(Spacer(1, 100))
-
-    konten.append(Paragraph(
-        "ESG AUDIT AI",
-        gaya_subjudul
-    ))
-
+    # Desain sampul akan digambar melalui canvas
+    konten.append(Spacer(1, 740))
     konten.append(PageBreak())
-
 
     # Tabel hasil pemeriksaan ESG
     data_tabel = [
@@ -193,28 +201,30 @@ def buat_pdf_laporan(judul, isi):
                 )
 
             konten.append(Spacer(1, 7))
-
     def nomor_halaman(canvas, dokumen):
+
+        # Desain khusus untuk halaman sampul
+        if dokumen.page == 1:
+            desain_sampul(canvas, dokumen)
+            return
+
+        # Footer untuk halaman berikutnya
         canvas.saveState()
-      
-        # Garis pemisah footer
+
         canvas.setStrokeColor(colors.HexColor("#17365D"))
         canvas.setLineWidth(0.8)
         canvas.line(40, 38, 555, 38)
 
-        # Identitas aplikasi
         canvas.setFont("Helvetica-Bold", 8)
         canvas.setFillColor(colors.HexColor("#17365D"))
         canvas.drawString(40, 25, "ESG AUDIT AI")
 
-        # Keterangan laporan
         canvas.setFont("Helvetica", 8)
         canvas.setFillColor(colors.grey)
         canvas.drawCentredString(
             297.5, 25, "Environmental • Social • Governance"
         )
 
-        # Nomor halaman
         canvas.drawRightString(
             555, 25, f"Halaman {dokumen.page}"
         )
