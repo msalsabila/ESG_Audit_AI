@@ -799,7 +799,6 @@ elif menu == "Laporan Audit":
                     "HASIL PEMERIKSAAN PER ASPEK"
                 ]
 
-             
                 for aspek, indikator in hasil.items():
                     jumlah = len(indikator)
                     jumlah_ada = sum(indikator.values())
@@ -814,8 +813,11 @@ elif menu == "Laporan Audit":
                         f"sedangkan {jumlah_belum} indikator belum terdeteksi."
                     )
 
-              isi_laporan.extend([
-    "",
+                isi_laporan.extend([
+                    "",
+                    "RINCIAN TEMUAN DAN REKOMENDASI"
+                ])
+
     "RINCIAN TEMUAN DAN REKOMENDASI"
 ])
 
